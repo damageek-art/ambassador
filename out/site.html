@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Школа амбассадоров ТАРКОС — MVP</title>
+<style>
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/oswald0.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/oswald1.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/oswald2.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/oswald3.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/oswald4.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face{font-family:Jost;src:url(../fonts/Jost.ttf);font-weight:100 900}
+:root{--ink:#0A0908;--graph:#15100C;--amber:#E39A2D;--copper:#C9862A;--cream:#F3EDE2;--bordo:#9C2F25;--muted:rgba(243,237,226,.62);--line:rgba(201,134,42,.4)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--cream);font-family:Jost,Arial,sans-serif;font-size:17px;line-height:1.5;overflow-x:hidden}
+a{color:inherit}
+h1,h2,h3,.o{font-family:Oswald,'Arial Narrow',sans-serif;font-weight:500;text-transform:uppercase;line-height:1.05}
+.k{font-size:13px;font-weight:600;letter-spacing:4px;color:var(--amber);text-transform:uppercase}
+.bars{display:flex;gap:18px;align-items:flex-end;margin:16px 0 0}.bars i{width:90px;height:5px;background:var(--bordo)}.bars u{width:220px;height:2px;background:var(--amber);margin-bottom:1px}
+.hatch{height:34px;background:repeating-linear-gradient(135deg,rgba(227,154,45,.7) 0 2px,transparent 2px 12px);border-bottom:2px solid var(--amber)}
+.bev{clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+.card{position:relative;background:linear-gradient(180deg,rgba(21,16,12,.95),rgba(10,9,8,.95));border:1px solid var(--line);border-left:3px solid var(--copper);padding:22px 24px}
+.btn{display:inline-flex;align-items:center;gap:10px;font:600 14px Jost;letter-spacing:3px;text-transform:uppercase;padding:14px 26px;border:0;cursor:pointer;background:var(--amber);color:var(--ink);text-decoration:none;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:.2s}
+.btn:hover{background:#f1ad44;transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--cream);box-shadow:inset 0 0 0 2px var(--copper)}
+.btn.sm{padding:9px 16px;font-size:12px;letter-spacing:2px}
+.btn.red{background:var(--bordo);color:var(--cream)}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border:1px solid var(--copper);color:var(--amber)}
+.tag.ok{background:var(--amber);color:var(--ink);border-color:var(--amber)}.tag.no{border-color:var(--bordo);color:#e0786e}.tag.mute{border-color:rgba(243,237,226,.25);color:var(--muted)}
+.demo{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+/* шапка */
+header.top{position:sticky;top:0;z-index:50;background:rgba(10,9,8,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .in{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:28px;padding:10px 24px}
+.top img{height:46px;cursor:pointer}
+.top nav{display:flex;gap:22px;flex:1}.top nav a{text-decoration:none;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}.top nav a:hover{color:var(--amber)}
+.roles{display:flex;border:1px solid var(--copper)}.roles button{background:none;border:0;color:var(--muted);font:600 12px Jost;letter-spacing:2px;text-transform:uppercase;padding:9px 14px;cursor:pointer}.roles button.on{background:var(--amber);color:var(--ink)}
+/* лендинг */
+.hero{position:relative;min-height:88vh;display:flex;align-items:flex-end;overflow:hidden}
+.hero img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:ken 14s ease-out both}
+@keyframes ken{from{transform:scale(1.12)}to{transform:none}}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,9,8,.96) 0%,rgba(10,9,8,.75) 40%,rgba(10,9,8,.15) 75%),linear-gradient(0deg,var(--ink) 0%,transparent 35%)}
+.hero .in{position:relative;z-index:2;max-width:1320px;margin:0 auto;width:100%;padding:0 24px 90px}
+.hero h1{font-size:clamp(54px,8vw,120px);max-width:900px;margin-top:18px}
+.hero h1 span{color:var(--amber)}
+.hero p.lead{font-size:21px;max-width:620px;margin:24px 0 34px;color:rgba(243,237,226,.88)}
+.stats{display:flex;gap:44px;margin-top:54px;flex-wrap:wrap}.stats div b{display:block;font:500 46px Oswald;color:var(--amber);line-height:1}.stats div span{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+section.s{max-width:1320px;margin:0 auto;padding:96px 24px}
+section.s h2{font-size:clamp(36px,4.4vw,60px);margin-top:10px}
+.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.about{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.about img{width:100%;height:520px;object-fit:cover;clip-path:polygon(0 0,calc(100% - 40px) 0,100% 40px,100% 100%,40px 100%,0 calc(100% - 40px));filter:saturate(.9)}
+.about ul{list-style:none;margin-top:26px}.about li{position:relative;padding-left:30px;margin:14px 0;font-size:19px}.about li:before{content:"";position:absolute;left:3px;top:11px;width:10px;height:10px;background:var(--amber);transform:rotate(45deg)}
+.block{position:relative;overflow:hidden;min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;padding:26px;border:1px solid var(--line);cursor:pointer;transition:.3s}
+.block img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.block:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,9,8,.97) 20%,rgba(10,9,8,.35) 75%)}
+.block:hover img{transform:scale(1.06)}.block:hover{border-color:var(--amber)}
+.block>*:not(img){position:relative;z-index:2}.block h3{font-size:30px;margin:8px 0 6px}.block .n{font:500 60px Oswald;color:var(--amber);line-height:1}
+.lessons{margin-top:26px;display:none}.lessons.on{display:grid}
+.lesson{display:flex;gap:14px;align-items:baseline;padding:14px 18px;border:1px solid var(--line);border-left:3px solid var(--copper);background:rgba(21,16,12,.8);text-decoration:none}
+.lesson b{font:500 18px Oswald;color:var(--amber);min-width:44px}.lesson:hover{border-left-color:var(--amber);background:rgba(227,154,45,.08)}
+.path{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:44px;position:relative}
+.path .st{padding:0 22px 30px 0;position:relative}.path .st:before{content:"";position:absolute;left:0;right:0;top:44px;height:2px;background:var(--line)}
+.path .st i{position:relative;display:block;width:16px;height:16px;border:3px solid var(--amber);background:var(--ink);transform:rotate(45deg);margin:36px 0 22px}
+.path .st b{font:500 36px Oswald;color:var(--amber)}.path h3{font-size:22px;margin-bottom:6px}.path p{color:var(--muted);font-size:15px}
+.cert{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+.cert img{width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px var(--line)}
+.cta{position:relative;overflow:hidden;padding:80px 24px;text-align:center;background:radial-gradient(ellipse at 50% 60%,#3A1D10,var(--ink) 70%)}
+footer{border-top:1px solid var(--line);padding:30px 24px;text-align:center;color:var(--muted);font-size:13px;letter-spacing:2px}
+/* модалка */
+.modal{position:fixed;inset:0;z-index:100;background:rgba(5,4,4,.8);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex;animation:fi .3s}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.modal .box{background:var(--graph);border:1px solid var(--copper);max-width:560px;width:100%;padding:36px;max-height:90vh;overflow:auto}
+.modal .box.wide{max-width:1000px}
+label{display:block;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
+input,select,textarea{width:100%;background:rgba(10,9,8,.8);border:1px solid var(--line);color:var(--cream);font:16px Jost;padding:12px 14px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amber)}
+/* кабинеты */
+.app{display:grid;grid-template-columns:270px 1fr;min-height:calc(100vh - 67px)}
+.side{border-right:1px solid var(--line);padding:26px 16px;background:linear-gradient(180deg,#120d0a,var(--ink))}
+.side .who{padding:0 10px 22px;border-bottom:1px solid var(--line);margin-bottom:16px}.side .who b{display:block;font:500 22px Oswald;text-transform:uppercase}
+.side a{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;text-decoration:none;color:var(--muted);font-size:15px;border-left:3px solid transparent}
+.side a:hover{color:var(--cream)}.side a.on{color:var(--cream);border-left-color:var(--amber);background:rgba(227,154,45,.08)}
+.side a em{font-style:normal;font-size:11px;background:var(--bordo);color:var(--cream);padding:1px 7px}
+.main{padding:34px 40px 60px;max-width:1200px}
+.main h2{font-size:42px;margin:8px 0 6px}
+.bar{height:8px;background:rgba(243,237,226,.1);position:relative;overflow:hidden}.bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--copper),var(--amber));transition:width .8s}
+.row{display:flex;align-items:center;gap:16px}
+.lvl{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:26px 0}
+.lvl .card{padding:18px}.lvl .card.lock{opacity:.45}.lvl .card.cur{border-left-color:var(--amber);box-shadow:0 0 0 1px var(--amber)}
+.lvl .n{font:500 34px Oswald;color:var(--amber);line-height:1}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);padding:10px 12px;border-bottom:1px solid var(--copper)}
+td{padding:12px;border-bottom:1px solid rgba(201,134,42,.2);vertical-align:middle}
+tr:hover td{background:rgba(227,154,45,.04)}
+.ls{display:flex;align-items:center;gap:14px;padding:13px 16px;border:1px solid var(--line);margin-bottom:8px;background:rgba(21,16,12,.7)}
+.ls b{font:500 18px Oswald;color:var(--amber);min-width:46px}.ls span.t{flex:1}
+.ls.done{border-left:3px solid var(--amber)}.ls.lock{opacity:.4}
+.badge{text-align:center;padding:24px 14px}.badge svg{width:84px;height:84px}.badge.off{opacity:.3;filter:grayscale(1)}
+.badge h3{font-size:18px;margin:12px 0 4px}.badge p{font-size:13px;color:var(--muted)}
+.chat{border:1px solid var(--line);background:rgba(21,16,12,.7);display:flex;flex-direction:column;height:520px}
+.chat .msgs{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.msg{max-width:70%}.msg .h{font-size:12px;color:var(--amber);letter-spacing:1px;margin-bottom:3px}.msg .b{background:rgba(243,237,226,.07);padding:10px 14px}
+.msg.me{align-self:flex-end}.msg.me .b{background:rgba(227,154,45,.18)}.msg.mod .h{color:#e0786e}
+.chat form{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line)}.chat form input{flex:1}
+.q{margin:22px 0}.q h3{font-size:22px;text-transform:none;font-family:Jost;font-weight:500;margin-bottom:10px}
+.opt{display:block;padding:12px 16px;border:1px solid var(--line);margin:8px 0;cursor:pointer;transition:.15s}.opt:hover{border-color:var(--amber)}
+.opt.sel{border-color:var(--amber);background:rgba(227,154,45,.12)}.opt.right{background:var(--amber);color:var(--ink);border-color:var(--amber)}.opt.wrong{border-color:var(--bordo);background:rgba(156,47,37,.25)}
+.kpi{padding:22px}.kpi b{display:block;font:500 44px Oswald;color:var(--amber);line-height:1}.kpi span{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.certbox{position:relative}.certbox img{width:100%;display:block}
+.certbox .nm{position:absolute;left:5.6%;top:44.9%;width:55.2%;height:5.6%;display:flex;align-items:center;justify-content:center;font:500 clamp(14px,2.2vw,30px) Oswald;color:#0A0908;text-transform:uppercase;letter-spacing:1px}
+.note{border-left:3px solid var(--amber);padding:10px 16px;background:rgba(227,154,45,.06);color:rgba(243,237,226,.85);font-size:15px;margin:16px 0}
+.toast{position:fixed;right:24px;bottom:24px;z-index:200;background:var(--amber);color:var(--ink);padding:14px 22px;font-weight:600;transform:translateY(120px);transition:.35s}
+.toast.on{transform:none}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s,transform .8s}.reveal.in{opacity:1;transform:none}
+@media (max-width:900px){.about,.cert,.app{grid-template-columns:1fr}.path{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.lvl{grid-template-columns:1fr 1fr}.top nav{display:none}.side{border-right:0}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <img src="../logo_m.png" alt="ТАРКОС" onclick="go('#/')">
+  <div style="flex:1"></div>
+  <div class="roles" id="roles"><button data-r="guest">Гость</button><button data-r="user">Участник</button><button data-r="admin">Администратор</button></div>
+</div></header>
+<div id="view"></div>
+<div class="modal" id="modal"><div class="box" id="mbox"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const DATA = {"blocks":[{"title":"Пиво, история и культура","photo":"p34","lessons":[{"num":"1.1","title":"Кто такой амбассадор","show":"block1/01.show.html"},{"num":"1.2","title":"ДНК ТАРКОС: семья и Страна чудес","show":"block1/02.show.html"},{"num":"1.3","title":"ДНК ТАРКОС: миссия, сообщество, ценности","show":"block1/03.show.html"},{"num":"1.4","title":"Пиво старше письменности","show":"block1/04.show.html"},{"num":"1.5","title":"Монастыри, хмель и закон 1516 года","show":"block1/05.show.html"},{"num":"1.6","title":"Пиво становится индустрией","show":"block1/06.show.html"},{"num":"1.7","title":"Запреты, стандарт и крафтовая революция","show":"block1/07.show.html"},{"num":"1.8","title":"Советское пиво и пивоварение сегодня","show":"block1/08.show.html"},{"num":"1.9","title":"Хильдегарда Бингенская","show":"block1/09.show.html"},{"num":"1.10","title":"Йозеф Гролль","show":"block1/10.show.html"},{"num":"1.11","title":"Пастер и Хансен","show":"block1/11.show.html"},{"num":"1.12","title":"Хранители традиций и качества","show":"block1/12.show.html"},{"num":"1.13","title":"Современная сцена и как рассказывать гостю","show":"block1/13.show.html"},{"num":"1.14","title":"Карта стилей: лагер и эль","show":"block1/14.show.html"},{"num":"1.15","title":"Мир элей","show":"block1/15.show.html"},{"num":"1.16","title":"Язык вкуса","show":"block1/16.show.html"},{"num":"1.17","title":"Порошок, спирт и «живое» пиво","show":"block1/17.show.html"},{"num":"1.18","title":"Эль, пена, вобла и эффект этикетки","show":"block1/18.show.html"},{"num":"1.19","title":"Пиво и культура потребления","show":"block1/19.show.html"}],"quiz":[{"q":"Что прежде всего «продаёт» гостю амбассадор ТАРКОС?","opts":["Химический состав сусла и уровень IBU","Впечатления, эмоции и послевкусие от знакомства с продуктом","Максимум технических фактов о производстве","Скидки и специальные предложения"],"ans":1},{"q":"Что, по официальной версии, стоит за мотивом Алисы на территории ТАРКОС?","opts":["Требование архитекторов замка","Дети основателей любят эту сказку","Мода на стимпанк","Название первого сорта пивоварни"],"ans":1},{"q":"Что означает слово «запланированное» в ценности «Качество на первом месте»?","opts":["Качество проверяют раз в квартал","Качество проектируется заранее и воспроизводится","Качество зависит от удачной варки","План по объёму важнее вкуса"],"ans":1},{"q":"Где записан первый известный письменный рецепт пива?","opts":["В папирусе Эберса","В «Гимне Нинкаси»","В трактате «Physica»","В законе Reinheitsgebot"],"ans":1},{"q":"Какие ингредиенты разрешал Баварский закон о чистоте пива 1516 года?","opts":["Вода, солод, хмель и дрожжи","Вода, ячменный солод и хмель","Вода, пшеница и грюйт","Вода, солод и мёд"],"ans":1},{"q":"Что доказал Луи Пастер в 1857 году?","opts":["Хмель консервирует пиво","Брожение — биологический процесс, который ведут живые дрожжи","Мягкая вода делает пиво прозрачным","Лагер можно варить только зимой"],"ans":1},{"q":"Почему после сухого закона американское массовое пиво стало лёгким и почти безвкусным?","opts":["Так захотели потребители","Конкуренция ценой: солод заменяли кукурузой и рисом","В США запретили хмель","Не хватало воды"],"ans":1},{"q":"Каким, по оценке чешских пивоваров, было советское «Жигулёвское»?","opts":["Светлым и очень горьким","Темнее пилснера, сладким и почти без хмеля","Кислым и мутным","Идентичным чешскому пилснеру"],"ans":1},{"q":"Что Хильдегарда Бингенская зафиксировала о хмеле?","opts":["Хмель повышает крепость пива","Хмель сдерживает гниение и продлевает хранение","Хмель может заменить солод","Хмель делает пиво прозрачным"],"ans":1},{"q":"Что из этого НЕ входило в формулу Йозефа Гролля?","opts":["Мягкая вода Пльзеня","Жатецкий хмель","Дикие дрожжи из воздуха","Светлый солод"],"ans":2},{"q":"Что сделал Эмиль Кристиан Хансен в 1883 году?","opts":["Изобрёл пастеризацию","Вырастил чистую культуру дрожжей из одной клетки","Сварил первый пильзнер","Описал свойства хмеля"],"ans":1},{"q":"Какой стиль вернул миру Пьер Селис?","opts":["Пилснер","Бельгийское белое пиво (витбир)","Раухбир","Императорский стаут"],"ans":1},{"q":"Как амбассадору лучше использовать историю пивоварения в разговоре с гостем?","opts":["Перечислять точные даты и фамилии","Давать короткие смысловые опоры: за каждым этапом стояли люди","Не упоминать историю вовсе","Говорить только о Германии и Чехии"],"ans":1},{"q":"Чем прежде всего отличаются лагер и эль?","opts":["Цветом","Крепостью","Типом дрожжей и температурой брожения","Страной происхождения"],"ans":2},{"q":"Откуда банановый аромат в немецком пшеничном пиве?","opts":["Добавляют банановый ароматизатор","Его дают особые дрожжи — изоамилацетат","От пшеничного солода","От хмеля"],"ans":1},{"q":"Как проще всего объяснить гостю, что такое «тело» пива?","opts":["Назвать плотность сусла в процентах","Сравнить ощущение воды и молока во рту","Сказать, что пиво «насыщенное»","Назвать уровень IBU"],"ans":1},{"q":"О чём на самом деле говорит срок годности пива в 3–7 дней?","opts":["О натуральности","О проблемах с чистотой производства","О наличии консервантов","О высоком качестве сырья"],"ans":1},{"q":"Чем эль на самом деле отличается от лагера?","opts":["Эль всегда крепче","Расой дрожжей и температурой брожения","Эль всегда тёмный","Лагер варят без хмеля"],"ans":1},{"q":"На чём амбассадор делает акцент в разговоре об алкоголе?","opts":["Пиво полезно для здоровья","Снижение вреда при переходе с крепкого на качественное слабоалкогольное","Пить можно сколько угодно","Вино вреднее пива"],"ans":1}],"int":{"href":"int/block1.show.html","title":"Разминка «Миф или правда?»"}},{"title":"Производство и УТП ТАРКОС","photo":"p24","lessons":[{"num":"2.1","title":"Что такое пиво: закон и биология","show":"block2/01.show.html"},{"num":"2.2","title":"Четыре кита пивоварения","show":"block2/02.show.html"},{"num":"2.3","title":"Варочный цех: от зерна до сусла","show":"block2/03.show.html"},{"num":"2.4","title":"Дрожжи и брожение","show":"block2/04.show.html"},{"num":"2.5","title":"Дозревание и выдержка","show":"block2/05.show.html"},{"num":"2.6","title":"Сепарация, фильтрация, стабилизация","show":"block2/06.show.html"},{"num":"2.7","title":"Розлив и контроль качества","show":"block2/07.show.html"},{"num":"2.8","title":"УТП ТАРКОС: европейское ДНК и сырьё","show":"block2/08.show.html"},{"num":"2.9","title":"УТП ТАРКОС: место, награды, история","show":"block2/09.show.html"}],"quiz":[{"q":"Что по российскому закону переводит продукт в категорию «пивной напиток»?","opts":["Слишком мало хмеля","Натуральные фрукты или больше 20% несоложенки","Отсутствие фильтрации","Крепость выше 5%"],"ans":1},{"q":"Что такое солод?","opts":["Отдельная злаковая культура","Пророщенное и высушенное зерно","Экстракт хмеля","Сахарный сироп"],"ans":1},{"q":"Каким получится пиво, если затирать при 68–72 °C?","opts":["Сухим, лёгким и хрустящим","Плотным, сладковатым и насыщенным","Кислым","Прозрачным и без вкуса"],"ans":1},{"q":"Что происходит, если брожение идёт слишком холодно?","opts":["Появляются сивушные масла","Дрожжи засыпают, пиво сладкое и плоское","Пиво становится крепче","Появляется запах сливочного масла"],"ans":1},{"q":"Какое пиво лучше пить молодым?","opts":["Имперский стаут","Барливайн","Свежую IPA","Бельгийский крепкий эль"],"ans":2},{"q":"Чем сепарация отличается от фильтрации?","opts":["Ничем — это синонимы","Сепарация — сила, фильтрация — пористый барьер","Фильтрация быстрее и без потерь","Сепарация убирает бактерии"],"ans":1},{"q":"Почему крафтовые пивоварни полюбили банку?","opts":["Она дешевле кега","Лучшая защита от кислорода и света","В ней пиво не нужно охлаждать","В банку разливают тёплым"],"ans":1},{"q":"Что даёт ТАРКОС собственный банк дрожжей?","opts":["Дрожжи обходятся дешевле","Независимость от поставок и аутентичные штаммы","Брожение без охлаждения","Возможность не использовать хмель"],"ans":1},{"q":"Почему награда Monde Selection — сильный аргумент для гостя?","opts":["Конкурс проходит в России","Судили вслепую, не зная, что это ТАРКОС","На конкурсе нет конкурентов","Её получают все участники"],"ans":1}],"int":{"href":"int/block2.show.html","title":"Разминка «Миф или правда?»"}},{"title":"Дегустация и фудпейринг","photo":"p06","lessons":[{"num":"3.1","title":"Искусство дегустации","show":"block3/01.show.html"},{"num":"3.2","title":"Как устроен вкус","show":"block3/02.show.html"},{"num":"3.3","title":"Колесо вкусов: солод, хмель, дрожжи","show":"block3/03.show.html"},{"num":"3.4","title":"Дефекты пива: брак или фишка стиля","show":"block3/04.show.html"},{"num":"3.5","title":"Фудпейринг: логика вкуса","show":"block3/05.show.html"},{"num":"3.6","title":"Фудпейринг: сложные случаи","show":"block3/06.show.html"},{"num":"3.7","title":"Фудпейринг: пары по стилям","show":"block3/07.show.html"},{"num":"3.8","title":"Проектирование дегустации","show":"block3/08.show.html"},{"num":"3.9","title":"Дегустация: сложные ситуации","show":"block3/09.show.html"}],"quiz":[{"q":"Какой этап даёт дегустатору больше всего информации о сорте?","opts":["Внешний вид","Аромат","Первый глоток","Высота пены"],"ans":1},{"q":"Что останется, если зажать нос и сделать глоток пива?","opts":["Весь вкус без изменений","Только базовые вкусы: горечь, сладость, кислинка","Только аромат хмеля","Ничего"],"ans":1},{"q":"Почему New England IPA ароматный, но мягкий по горечи?","opts":["В нём нет хмеля","Хмель добавляют поздно — он уходит в аромат","Его долго кипятят","Горечь убирает фильтрация"],"ans":1},{"q":"Какой дефект недопустим ни в одном стиле пива?","opts":["Диацетил","Банановый эфир","Погребной тон (ТХА)","Уксусная кислота"],"ans":2},{"q":"Почему горький IPA хорошо сочетается с жирным стейком?","opts":["Горечь усиливает жирность","Горечь «режет» жир и готовит нёбо к следующему куску","IPA сладкий","Это просто традиция"],"ans":1},{"q":"Какое правило действует при подборе пива к десерту?","opts":["Пиво должно быть горче десерта","Пиво таким же сладким или слаще десерта","К десертам подходит только лагер","Десерты с пивом не сочетают"],"ans":1},{"q":"Что предложить гостю к острой корейской еде?","opts":["Очень горький IPA","Молочный стаут","Имперский стаут 12%","Сухой West Coast IPA"],"ans":1},{"q":"Где в дегустационном сете место сильно охмелённого IPA?","opts":["В самом начале","Ближе к концу","Сразу после безалкогольного","Порядок не важен"],"ans":1},{"q":"Группа опоздала, времени меньше. Что делать?","opts":["Подавать все сорта быстрее","Сократить число сортов и вступление","Отменить дегустацию","Убрать со стола воду"],"ans":1}],"int":{"href":"int/block3.show.html","title":"Разминка «Миф или правда?»"}},{"title":"Голос и публичное выступление","photo":"p32","lessons":[{"num":"4.1","title":"Публичное выступление: управление вниманием","show":"block4/01.show.html"},{"num":"4.2","title":"Публичное выступление: как читать группу","show":"block4/02.show.html"},{"num":"4.3","title":"Голос: пять параметров","show":"block4/03.show.html"},{"num":"4.4","title":"Голос: гигиена и тренировка","show":"block4/04.show.html"},{"num":"4.5","title":"Невербальная коммуникация","show":"block4/05.show.html"}],"quiz":[{"q":"Задние ряды разговаривают. Как вернуть их внимание?","opts":["Повысить голос","Сделать паузу и посмотреть в их сторону","Сделать им замечание","Говорить быстрее"],"ans":1},{"q":"Какой вопрос лучше всего запускает диалог с группой?","opts":["«Вы знаете, что такое брожение?»","«Почему пиво пенится, а не просто газируется?»","«Всем понятно?»","«Есть вопросы?»"],"ans":1},{"q":"Как должна звучать фраза-утверждение в конце?","opts":["С повышением тона","С понижением тона","Шёпотом","Быстрее обычного"],"ans":1},{"q":"Что делать при первых признаках хрипоты?","opts":["Говорить громче","Перейти на шёпот","Снизить громкость и пить воду маленькими глотками","Выпить холодной газировки"],"ans":2},{"q":"Сколько времени смотреть на одного гостя?","opts":["15–20 секунд, чтобы он почувствовал внимание","3–5 секунд — одна законченная мысль","Не смотреть в глаза вообще","Смотреть поверх голов"],"ans":1}],"int":{"href":"int/block4.show.html","title":"Кейсы «Что ответите гостю?»"}},{"title":"Аудитория, юмор и этика","photo":"p01","lessons":[{"num":"5.1","title":"Бестиарий: подготовка и первые профили","show":"block5/01.show.html"},{"num":"5.2","title":"Бестиарий: весельчак, эксперт, романтик, случайный гость","show":"block5/02.show.html"},{"num":"5.3","title":"Группа как система: динамика и финал","show":"block5/03.show.html"},{"num":"5.4","title":"Импровизация и юмор","show":"block5/04.show.html"},{"num":"5.5","title":"Возражения и сложные ситуации","show":"block5/05.show.html"},{"num":"5.6","title":"Профессиональная этика: уважение к гостю","show":"block5/06.show.html"},{"num":"5.7","title":"Профессиональная этика: границы и продукт","show":"block5/07.show.html"}],"quiz":[{"q":"Как лучше всего работать со скептиком?","opts":["Растормошить позитивом","Дать факты и задачу для размышления","Позвать участвовать публично","Игнорировать, пока не оттает"],"ans":1},{"q":"Чем весельчак отличается от активиста?","opts":["Ничем","Весельчак хочет атмосферы, активист — участия","Активист всегда шутит","Весельчак задаёт больше вопросов"],"ans":1},{"q":"Как лучше спросить гостей об обратной связи?","opts":["«Всё понравилось?»","«Что было самым интересным?»","«Оцените нас вслух по 10-балльной шкале»","Лучше не спрашивать"],"ans":1},{"q":"Над чем шутить безопаснее всего?","opts":["Над гостем","Над собой","Над выбором гостя","Над количеством выпитого"],"ans":1},{"q":"Гость спрашивает: «Ваше пиво лучше, чем у конкурента?» Что ответить?","opts":["Раскритиковать конкурента","Говорить только о своём пиве и дать гостю сравнить","Уйти от ответа","Сказать, что у конкурентов «порошок»"],"ans":1},{"q":"Что значит «вежливость без снисхождения»?","opts":["Объяснять только самые основы","Объяснять просто, не упрощая человека, и давать выбор","Уходить от сложных вопросов","Говорить профессиональными терминами"],"ans":1},{"q":"Гость грубит во второй раз. Что делать?","opts":["Ответить тем же","Спокойно обозначить границу","Сразу прекратить экскурсию","Бесконечно не замечать"],"ans":1}],"int":{"href":"int/block5.show.html","title":"Кейсы «Что ответите гостю?»"}}]};
+// ---------- демо-состояние ----------
+const S = {
+  role: 'guest',
+  me: { name: 'Анна Смирнова', dept: 'Отдел продаж HoReCa', applied: false },
+  done: new Set(), // пройденные уроки
+  tests: {},       // блок → { score, total }
+  booked: new Set(),
+  chat: [
+    { who: 'Координатор', mod: true, t: 'Добро пожаловать в поток №3! Здесь обсуждаем уроки и договариваемся о практике.' },
+    { who: 'Илья К.', t: 'Прошёл урок про Гролля — теперь понимаю, почему пилснер золотой 🙂' },
+    { who: 'Мария Л.', t: 'Кто идёт на очную дегустацию в четверг? Давайте разберём дефекты вместе.' },
+  ],
+  support: [{ who: 'Поддержка', mod: true, t: 'Здравствуйте! Опишите проблему — координатор ответит в течение рабочего дня.' }],
+  apps: [
+    { id: 1, name: 'Дмитрий Орлов', dept: 'Ресторан «Česká Pitnica»', date: '24.09.2026', st: 'new', doc: { t: 'url', v: 'https://tarkos.bitrix24.ru/disk/dopusk-orlov' } },
+    { id: 2, name: 'Екатерина Белова', dept: 'Экскурсионная служба', date: '25.09.2026', st: 'new', doc: { t: 'file', v: 'Допуск_Белова.pdf' } },
+    { id: 3, name: 'Павел Громов', dept: 'Отдел продаж', date: '26.09.2026', st: 'new', doc: null },
+    { id: 4, name: 'Ольга Руденко', dept: 'Green Hat', date: '20.09.2026', st: 'ok', course: 'Поток №3', doc: { t: 'file', v: 'Допуск_Руденко.pdf' } },
+  ],
+  users: [
+    { name: 'Илья Кузнецов', dept: 'Экскурсии', lvl: 3, prog: 58, score: 92, st: 'act' },
+    { name: 'Мария Лебедева', dept: 'Belgium Reserva', lvl: 2, prog: 34, score: 85, st: 'act' },
+    { name: 'Сергей Павлов', dept: 'Отдел продаж', lvl: 5, prog: 100, score: 96, st: 'act', cert: 'ready' },
+    { name: 'Наталья Юдина', dept: 'Экскурсии', lvl: 5, prog: 100, score: 88, st: 'act', cert: 'sent' },
+    { name: 'Артём Власов', dept: 'Green Hat', lvl: 1, prog: 12, score: 61, st: 'warn' },
+    { name: 'Олег Ткачёв', dept: 'Отдел продаж', lvl: 2, prog: 29, score: 74, st: 'blocked' },
+  ],
+  sessions: [
+    { id: 1, title: 'Очная дегустация: сенсорика и дефекты', date: '08.10.2026', time: '18:00', place: 'Дегустационный зал ТАРКОС', cap: 16, seats: 11, lvl: 3 },
+    { id: 2, title: 'Практикум: экскурсия по маршруту пивоварни', date: '15.10.2026', time: '11:00', place: 'Варочный цех', cap: 12, seats: 4, lvl: 2 },
+    { id: 3, title: 'Голос и публичное выступление', date: '22.10.2026', time: '17:00', place: 'Онлайн-семинар', cap: 30, seats: 18, lvl: 4 },
+    { id: 4, title: 'Фудпейринг с шеф-поваром', date: '29.10.2026', time: '19:00', place: 'Ресторан HoReCa', cap: 14, seats: 14, lvl: 3 },
+  ],
+};
+try { const r = localStorage.getItem('tarkos-role'); if (r) S.role = r; } catch (e) {}
+// демо: у участника уже пройдено начало блока 1
+DATA.blocks[0].lessons.slice(0, 6).forEach(l => S.done.add(l.num));
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const toast = t => { const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2600); };
+const modal = (html, wide) => { $('#mbox').className = 'box' + (wide ? ' wide' : ''); $('#mbox').innerHTML = html; $('#modal').classList.add('on'); };
+const closeModal = () => $('#modal').classList.remove('on');
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+const go = h => { location.hash = h; };
+const head = (k, t, sub) => `<div class="k">${k}</div>${t ? `<h2>${t}</h2>` : ''}<div class="bars"><i></i><u></u></div>${sub ? `<p style="color:var(--muted);margin-top:14px;max-width:760px">${sub}</p>` : ''}`;
+const bar = p => `<div class="bar"><i style="width:${p}%"></i></div>`;
+const allLessons = () => DATA.blocks.flatMap(b => b.lessons);
+const blockProg = b => Math.round(b.lessons.filter(l => S.done.has(l.num)).length / b.lessons.length * 100);
+const passed = i => (S.tests[i] && S.tests[i].score / S.tests[i].total >= .7);
+const level = () => { let l = 1; for (let i = 0; i < DATA.blocks.length - 1; i++) if (passed(i)) l = i + 2; else break; return l; };
+const totalProg = () => Math.round([...S.done].length / allLessons().length * 100);
+
+function setRole(r) { S.role = r; try { localStorage.setItem('tarkos-role', r); } catch (e) {} go(r === 'guest' ? '#/' : r === 'user' ? '#/me' : '#/admin'); }
+document.querySelectorAll('#roles button').forEach(b => b.onclick = () => setRole(b.dataset.r));
+
+// ---------- иконки ачивок (гравюра) ----------
+const ICON = {
+  key: '<circle cx="36" cy="60" r="16"/><path d="M52 60 H96 M84 60 V72 M92 60 V70"/>',
+  watch: '<circle cx="60" cy="64" r="30"/><path d="M60 64 L48 52 M60 64 L74 46"/><circle cx="60" cy="26" r="6"/>',
+  hop: '<path d="M60 24 C80 34 84 66 60 102 C36 66 40 34 60 24 Z"/><path d="M46 48 Q60 58 74 48 M44 64 Q60 76 76 64 M48 80 Q60 90 72 80"/>',
+  glass: '<path d="M40 22 H80 C84 44 82 62 60 70 C38 62 36 44 40 22 Z"/><path d="M60 70 V96 M44 98 H76"/>',
+  chat: '<path d="M22 30 H82 V72 H46 L30 88 V72 H22 Z"/><path d="M34 46 H70 M34 58 H60"/>',
+  door: '<path d="M34 100 V52 A26 26 0 0 1 86 52 V100 Z"/><circle cx="60" cy="68" r="6"/><path d="M56 73 L53 88 H67 L64 73"/>',
+  medal: '<circle cx="60" cy="72" r="22"/><path d="M46 52 L36 20 H52 L60 42 L68 20 H84 L74 52"/>',
+};
+const ic = (n, on = true) => `<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="none" stroke="#C9862A" stroke-width="1.5" opacity=".6"/><g fill="none" stroke="${on ? '#E39A2D' : '#777'}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</g></svg>`;
+const BADGES = () => [
+  { i: 'door', t: 'Первый шаг', d: 'Пройден первый урок', on: S.done.size >= 1 },
+  { i: 'watch', t: 'Хранитель истории', d: 'Тест блока 1 сдан', on: passed(0) },
+  { i: 'hop', t: 'Знаток производства', d: 'Тест блока 2 сдан', on: passed(1) },
+  { i: 'glass', t: 'Мастер дегустации', d: 'Тест блока 3 сдан', on: passed(2) },
+  { i: 'chat', t: 'Голос замка', d: 'Тест блока 4 сдан', on: passed(3) },
+  { i: 'key', t: 'Проводник вкуса', d: 'Тест блока 5 сдан', on: passed(4) },
+  { i: 'medal', t: 'Сертифицирован', d: 'Все блоки пройдены', on: passed(4) },
+];
+
+// ---------- ЛЕНДИНГ ----------
+function landing() {
+  const B = DATA.blocks;
+  return `
+<section class="hero"><img class="bg" src="../ph/p37.jpg" alt="Пивоварня ТАРКОС"><div class="in">
+  <div class="k">Корпоративное обучение · Пивоварня ТАРКОС</div>
+  <h1>Школа <span>амбассадоров</span> ТАРКОС</h1>
+  <p class="lead">Станьте проводником вкуса: научитесь понимать пиво, производство и культуру — и переводить язык пивовара на язык гостя.</p>
+  <div class="row"><button class="btn" onclick="apply()">Подать заявку</button><a class="btn ghost" href="#program" onclick="event.preventDefault();document.getElementById('program').scrollIntoView()">Программа курса</a></div>
+  <div class="stats">
+    <div><b>${B.length}</b><span>блоков</span></div>
+    <div><b>5–7</b><span>минут на урок</span></div><div><b>65 000+</b><span>гостей за 5 лет</span></div>
+  </div>
+</div></section>
+<div class="hatch"></div>
+<section class="s about reveal">
+  <div>${head('Роль амбассадора', 'Больше, чем гид', 'Амбассадор — эксперт, которому доверяют гости и которому бренд доверяет представлять себя. Он продаёт не цифры, а впечатления, эмоции и послевкусие знакомства с продуктом.')}
+  <ul><li>Понимать продукт, производство и культуру пива</li><li>Объяснять сложный профиль пива за 10 секунд</li><li>Работать с возражениями и любой аудиторией</li><li>Вести экскурсии и дегустации в стиле ТАРКОС</li></ul></div>
+  <img src="../ph/p05.jpg" alt="Экскурсия на пивоварне">
+</section>
+<section class="s reveal" id="program">${head('Программа', '', 'Короткие уроки по 5–7 минут: презентация с анимацией, разминка «Миф или правда?» или кейс, самопроверка и итог. Нажмите на блок, чтобы увидеть уроки.')}
+  <div class="grid g3" style="margin-top:34px">${B.map((b, i) => `<div class="block" onclick="toggleBlock(${i})"><img src="../ph/${b.photo}.jpg" alt=""><div class="n">0${i + 1}</div><h3>${esc(b.title)}</h3><div class="demo" style="color:var(--amber)">${b.lessons.length} уроков</div></div>`).join('')}</div>
+  ${B.map((b, i) => `<div class="lessons grid g3" id="bl${i}" style="gap:10px"><div class="k" style="grid-column:1/-1;margin-top:10px">Блок ${i + 1} · ${esc(b.title)}</div>${b.lessons.map(l => `<a class="lesson" href="${l.show}" target="_blank"><b>${l.num}</b><span>${esc(l.title)}</span></a>`).join('')}</div>`).join('')}
+</section>
+<div class="hatch"></div>
+<section class="s reveal">${head('Как проходит обучение', 'Путь амбассадора')}
+  <div class="path">${[
+    ['01', 'Заявка', 'Оставляете заявку, координатор назначает курс и поток'],
+    ['02', 'Личный кабинет', 'Уроки, прогресс, расписание и чат потока в одном месте'],
+    ['03', 'Уроки и тесты', 'Проходите блоки, сдаёте тест — и открываете следующий уровень'],
+    ['04', 'Сертификат', 'Очные занятия, ачивки и сертификат о прохождении'],
+  ].map(s => `<div class="st"><b>${s[0]}</b><i></i><h3>${s[1]}</h3><p>${s[2]}</p></div>`).join('')}</div>
+</section>
+<section class="s cert reveal"><img src="../cert.jpg" alt="Сертификат ТАРКОС"><div>${head('Результат', 'Сертификат амбассадора', 'После всех блоков и очных занятий — сертификат о прохождении корпоративного обучения: электронный и печатный.')}<div style="margin-top:28px"><button class="btn" onclick="apply()">Хочу в школу</button></div></div></section>
+<section class="cta"><div class="k">Набор в поток</div><h2 style="font-size:clamp(34px,4vw,56px);margin:12px 0 24px">Добро пожаловать в кроличью нору</h2><button class="btn" onclick="apply()">Подать заявку</button></section>
+`;
+}
+function toggleBlock(i) { document.querySelectorAll('.lessons').forEach((e, j) => e.classList.toggle('on', j === i && !e.classList.contains('on'))); const e = $('#bl' + i); if (e.classList.contains('on')) e.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function apply() {
+  modal(`<div class="k">Заявка</div><h2 style="font-size:36px;margin:8px 0">В школу амбассадоров</h2>
+  <form onsubmit="event.preventDefault();sendApp(this)">
+  <label>Имя и фамилия</label><input name="n" required value="${esc(S.me.name)}">
+  <label>Подразделение</label><input name="d" required value="${esc(S.me.dept)}">
+  <label>Документ о допуске к обучению *</label>
+  <div class="note" style="margin:6px 0 10px;font-size:14px">Документ оформляется отдельно в Битрикс24. Приложите файл или вставьте ссылку на него.</div>
+  <div class="roles" style="display:inline-flex;margin-bottom:10px"><button type="button" class="on" id="dtF" onclick="docMode('f')">Файл</button><button type="button" id="dtL" onclick="docMode('l')">Ссылка на Битрикс</button></div>
+  <div id="dF"><input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"><div class="demo" style="margin-top:6px">PDF, DOC, DOCX, JPG или PNG</div></div>
+  <div id="dL" style="display:none"><input type="url" name="url" placeholder="https://…bitrix24.ru/disk/…"></div>
+  <div id="dErr" style="display:none;color:#e0786e;font-size:14px;margin-top:8px">Приложите документ о допуске или укажите ссылку на него</div>
+  <div class="row" style="margin-top:22px"><button class="btn">Отправить</button><button type="button" class="btn ghost" onclick="closeModal()">Отмена</button></div></form>`);
+}
+function docMode(m) { $('#dtF').classList.toggle('on', m === 'f'); $('#dtL').classList.toggle('on', m === 'l'); $('#dF').style.display = m === 'f' ? '' : 'none'; $('#dL').style.display = m === 'l' ? '' : 'none'; }
+function sendApp(f) {
+  const file = f.file.files[0], url = f.url.value.trim(), isL = $('#dtL').classList.contains('on');
+  const doc = isL ? (url ? { t: 'url', v: url } : null) : (file ? { t: 'file', v: file.name } : null);
+  if (!doc) { $('#dErr').style.display = 'block'; return; }
+  S.me.name = f.n.value; S.me.dept = f.d.value; S.me.applied = true;
+  S.apps.unshift({ id: Date.now(), name: S.me.name, dept: S.me.dept, date: '28.09.2026', st: 'new', doc });
+  modal(`<div class="k">Заявка отправлена</div><h2 style="font-size:34px;margin:10px 0">Спасибо, ${esc(S.me.name.split(' ')[0])}!</h2><p style="color:var(--muted)">Координатор рассмотрит заявку и назначит курс. Для демонстрации — войдите в личный кабинет участника сразу.</p>
+  <div class="row" style="margin-top:24px"><button class="btn" onclick="closeModal();setRole('user')">В личный кабинет</button><button class="btn ghost" onclick="closeModal();setRole('admin')">Глазами администратора</button></div>`);
+}
+
+// ---------- КАБИНЕТ УЧАСТНИКА ----------
+const MENU_U = [['#/me', 'Главная'], ['#/me/lessons', 'Уроки'], ['#/me/tests', 'Тесты'], ['#/me/badges', 'Ачивки'], ['#/me/schedule', 'Очные занятия'], ['#/me/chat', 'Чат потока'], ['#/me/support', 'Поддержка'], ['#/me/cert', 'Сертификат']];
+const MENU_A = [['#/admin', 'Обзор'], ['#/admin/apps', 'Заявки'], ['#/admin/users', 'Участники'], ['#/admin/tests', 'Тесты'], ['#/admin/schedule', 'Расписание'], ['#/admin/chat', 'Чат потока'], ['#/admin/support', 'Поддержка'], ['#/admin/certs', 'Сертификаты'], ['#/admin/rules', 'Нарушители'], ['#/admin/map', 'Карта MVP']];
+function shell(menu, who, role, body) {
+  const h = location.hash || '#/';
+  const cnt = { '#/admin/apps': S.apps.filter(a => a.st === 'new').length };
+  return `<div class="app"><aside class="side"><div class="who"><span class="demo">${role}</span><b>${esc(who)}</b></div>${menu.map(m => `<a href="${m[0]}" class="${h === m[0] ? 'on' : ''}">${m[1]}${cnt[m[0]] ? `<em>${cnt[m[0]]}</em>` : ''}</a>`).join('')}</aside><main class="main">${body}</main></div>`;
+}
+function uHome() {
+  const L = level(), p = totalProg();
+  const next = allLessons().find(l => !S.done.has(l.num) && +l.num.split('.')[0] <= L);
+  return head(`Поток №3 · уровень ${L} из 5`, `Здравствуйте, ${esc(S.me.name.split(' ')[0])}!`) + `
+  <div class="grid g3" style="margin-top:26px"><div class="card kpi"><b>${p}%</b><span>курса пройдено</span></div><div class="card kpi"><b>${S.done.size}/${allLessons().length}</b><span>уроков</span></div><div class="card kpi"><b>${BADGES().filter(b => b.on).length}</b><span>ачивок</span></div></div>
+  <div class="lvl">${DATA.blocks.map((b, i) => { const lock = i + 1 > L, cur = i + 1 === L; return `<div class="card ${lock ? 'lock' : ''} ${cur ? 'cur' : ''}"><div class="n">0${i + 1}</div><div style="font-size:14px;margin:6px 0 10px;min-height:42px">${esc(b.title)}</div>${bar(blockProg(b))}<div class="demo" style="margin-top:8px">${lock ? 'закрыт' : passed(i) ? 'тест сдан' : blockProg(b) + '%'}</div></div>`; }).join('')}</div>
+  ${next ? `<div class="card" style="display:flex;align-items:center;gap:20px"><div style="flex:1"><div class="k">Продолжить</div><h3 style="font-size:26px;margin-top:6px">${next.num} · ${esc(next.title)}</h3></div><button class="btn" onclick="openLesson('${next.num}')">Открыть урок</button></div>` : ''}
+  <div class="note">Уровни = блоки курса. Следующий блок открывается после теста предыдущего (проходной балл 70%).</div>`;
+}
+function uLessons() {
+  const L = level();
+  return head('Уроки', 'Программа курса', 'Каждый урок — анимированная презентация на 5–7 минут. Урок отмечается пройденным после просмотра.') + DATA.blocks.map((b, i) => `<div style="margin-top:30px"><div class="row"><h3 style="font-size:24px;flex:1">Блок ${i + 1} · ${esc(b.title)}</h3><span class="demo">${blockProg(b)}%</span></div><div style="margin:10px 0 14px">${bar(blockProg(b))}</div>
+  ${b.lessons.map(l => { const lock = i + 1 > L, d = S.done.has(l.num); return `<div class="ls ${d ? 'done' : ''} ${lock ? 'lock' : ''}"><b>${l.num}</b><span class="t">${esc(l.title)}</span>${d ? '<span class="tag ok">пройден</span>' : lock ? '<span class="tag mute">закрыт</span>' : `<button class="btn sm" onclick="openLesson('${l.num}')">Смотреть</button>`}</div>`; }).join('')}${b.int ? `<div class="ls" style="border-left:3px solid var(--amber);background:rgba(227,154,45,.07)"><b>★</b><span class="t">${esc(b.int.title)}<span class="demo" style="display:block">интерактив блока ${i + 1} · для очных занятий</span></span>${i + 1 > L ? '<span class="tag mute">закрыт</span>' : `<a class="btn sm ghost" href="${b.int.href}" target="_blank">Открыть</a>`}</div>` : ''}</div>`).join('');
+}
+function openLesson(num) {
+  const l = allLessons().find(x => x.num === num); window.open(l.show, '_blank');
+  S.done.add(num); toast('Урок ' + num + ' отмечен пройденным'); render();
+}
+function uTests() {
+  const L = level();
+  return head('Тесты', 'Проверка по блокам', 'Вопросы собраны из самопроверок уроков. Проходной балл — 70%: после него открывается следующий уровень.') + `<div class="grid g2" style="margin-top:26px">${DATA.blocks.map((b, i) => { const t = S.tests[i], lock = i + 1 > L; return `<div class="card ${lock ? '' : ''}" style="${lock ? 'opacity:.45' : ''}"><div class="k">Блок ${i + 1}</div><h3 style="font-size:24px;margin:6px 0 12px">${esc(b.title)}</h3><div class="row"><span class="demo" style="flex:1">${b.quiz.length} вопросов</span>${t ? `<span class="tag ${passed(i) ? 'ok' : 'no'}">${t.score}/${t.total}</span>` : ''}${lock ? '<span class="tag mute">закрыт</span>' : `<button class="btn sm" onclick="go('#/me/test/${i}')">${t ? 'Пересдать' : 'Начать'}</button>`}</div></div>`; }).join('')}</div>`;
+}
+function uTest(i) {
+  const b = DATA.blocks[i];
+  return head(`Тест · блок ${i + 1}`, esc(b.title)) + `<form id="tf" onsubmit="event.preventDefault();checkTest(${i})">${b.quiz.map((q, n) => `<div class="q"><h3>${n + 1}. ${esc(q.q)}</h3>${q.opts.map((o, k) => `<label class="opt" data-q="${n}" data-k="${k}" onclick="pick(this)">${'АБВГ'[k]}. ${esc(o)}</label>`).join('')}</div>`).join('')}
+  <div class="row" style="margin-top:20px"><button class="btn">Проверить</button><span class="demo" id="tres"></span></div></form>`;
+}
+function pick(el) { document.querySelectorAll(`.opt[data-q="${el.dataset.q}"]`).forEach(o => o.classList.remove('sel')); el.classList.add('sel'); }
+function checkTest(i) {
+  const b = DATA.blocks[i]; let score = 0;
+  b.quiz.forEach((q, n) => { document.querySelectorAll(`.opt[data-q="${n}"]`).forEach(o => { const k = +o.dataset.k; if (k === q.ans) o.classList.add('right'); else if (o.classList.contains('sel')) o.classList.add('wrong'); if (k === q.ans && o.classList.contains('sel')) score++; }); });
+  S.tests[i] = { score, total: b.quiz.length };
+  const ok = passed(i); $('#tres').innerHTML = `Результат: <b style="color:var(--amber)">${score}/${b.quiz.length}</b> — ${ok ? (i < 4 ? 'уровень ' + (i + 2) + ' открыт!' : 'курс завершён!') : 'нужно 70%, попробуйте ещё раз'}`;
+  toast(ok ? 'Тест сдан! Новая ачивка' : 'Тест не сдан');
+}
+function uBadges() {
+  return head('Ачивки', 'Ваши награды', 'Ачивки выдаются автоматически за уроки и тесты.') + `<div class="grid g4" style="margin-top:26px">${BADGES().map(b => `<div class="card badge ${b.on ? '' : 'off'}">${ic(b.i, b.on)}<h3>${b.t}</h3><p>${b.d}</p></div>`).join('')}</div>`;
+}
+function uSchedule() {
+  const L = level();
+  return head('Очные занятия', 'Расписание и запись', 'Записаться можно на занятия своего уровня и ниже. Места ограничены.') + `<table style="margin-top:24px"><tr><th>Дата</th><th>Занятие</th><th>Место</th><th>Уровень</th><th>Свободно</th><th></th></tr>${S.sessions.map(s => { const b = S.booked.has(s.id), can = s.lvl <= L, free = s.seats - (b ? 1 : 0); return `<tr><td class="o" style="color:var(--amber)">${s.date}<br><span class="demo">${s.time}</span></td><td>${esc(s.title)}</td><td>${esc(s.place)}</td><td>${s.lvl}</td><td>${free}/${s.cap}</td><td>${b ? `<button class="btn sm ghost" onclick="book(${s.id})">Отменить</button>` : !can ? '<span class="tag mute">с уровня ' + s.lvl + '</span>' : free <= 0 ? '<span class="tag no">мест нет</span>' : `<button class="btn sm" onclick="book(${s.id})">Записаться</button>`}</td></tr>`; }).join('')}</table><div class="demo" style="margin-top:12px">Даты и места — демонстрационные</div>`;
+}
+function book(id) { S.booked.has(id) ? (S.booked.delete(id), toast('Запись отменена')) : (S.booked.add(id), toast('Вы записаны — напоминание придёт за день')); render(); }
+function chatView(list, key, title, sub, mod) {
+  return head(title, sub) + `<div class="chat" style="margin-top:22px"><div class="msgs" id="msgs">${list.map((m, n) => `<div class="msg ${m.me ? 'me' : ''} ${m.mod ? 'mod' : ''}"><div class="h">${esc(m.who)}${mod && !m.mod ? ` · <a href="#" onclick="event.preventDefault();delMsg('${key}',${n})" style="color:#e0786e">удалить</a>` : ''}</div><div class="b">${esc(m.t)}</div></div>`).join('')}</div>
+  <form onsubmit="event.preventDefault();say('${key}',this.m.value,${mod ? 1 : 0});this.reset()"><input name="m" placeholder="Сообщение…" autocomplete="off"><button class="btn sm">Отправить</button></form></div>`;
+}
+function say(key, t, mod) {
+  if (!t.trim()) return; S[key].push({ who: mod ? 'Координатор' : S.me.name, t, me: !mod, mod: !!mod });
+  if (key === 'support' && !mod) setTimeout(() => { S.support.push({ who: 'Поддержка', mod: true, t: 'Приняли! Передали координатору потока, ответим сегодня.' }); render(); }, 900);
+  render(); setTimeout(() => { const m = $('#msgs'); if (m) m.scrollTop = 1e6; }, 30);
+}
+function delMsg(key, n) { S[key].splice(n, 1); toast('Сообщение удалено модератором'); render(); }
+function uCert() {
+  const ok = passed(4);
+  return head('Сертификат', ok ? 'Поздравляем!' : 'Сертификат ещё впереди', ok ? 'Электронная версия готова, печатная будет отправлена координатором.' : `Пройдите все 5 блоков и сдайте тесты. Сейчас пройдено ${totalProg()}% курса.`) +
+    `<div class="certbox" style="margin-top:26px;max-width:900px;${ok ? '' : 'opacity:.35;filter:grayscale(.6)'}"><img src="../cert.jpg" alt=""><div class="nm">${esc(S.me.name)}</div></div>
+    ${ok ? '' : `<div class="note">Для демонстрации можно «пройти» курс мгновенно: <a href="#" onclick="event.preventDefault();demoFinish()">завершить все тесты</a>.</div>`}`;
+}
+function demoFinish() { allLessons().forEach(l => S.done.add(l.num)); DATA.blocks.forEach((b, i) => S.tests[i] = { score: b.quiz.length, total: b.quiz.length }); toast('Демо: курс завершён'); render(); }
+
+// ---------- КАБИНЕТ АДМИНИСТРАТОРА ----------
+function aHome() {
+  const nw = S.apps.filter(a => a.st === 'new').length, act = S.users.filter(u => u.st !== 'blocked').length;
+  const avg = Math.round(S.users.reduce((s, u) => s + u.score, 0) / S.users.length);
+  return head('Администратор · поток №3', 'Обзор школы') + `<div class="grid g4" style="margin-top:26px">
+  <div class="card kpi"><b>${nw}</b><span>новых заявок</span></div><div class="card kpi"><b>${act}</b><span>активных участников</span></div>
+  <div class="card kpi"><b>${avg}%</b><span>средний балл тестов</span></div><div class="card kpi"><b>${S.users.filter(u => u.cert === 'ready').length}</b><span>сертификатов к отправке</span></div></div>
+  <h3 style="font-size:24px;margin:34px 0 12px">Прогресс участников</h3>${S.users.map(u => `<div class="row" style="margin:10px 0"><span style="width:220px">${esc(u.name)}</span><div style="flex:1">${bar(u.prog)}</div><span class="demo" style="width:60px;text-align:right">${u.prog}%</span></div>`).join('')}
+  <div class="note">Все люди, даты и цифры в кабинете администратора — демонстрационные.</div>`;
+}
+function aApps() {
+  return head('Заявки', 'Обработка заявок', 'Одобрение заявки назначает курс и поток — участник получает доступ в личный кабинет.') + `<table style="margin-top:24px"><tr><th>Дата</th><th>Имя</th><th>Подразделение</th><th>Допуск</th><th>Статус</th><th></th></tr>${S.apps.map(a => `<tr><td>${a.date}</td><td>${esc(a.name)}</td><td>${esc(a.dept)}</td><td>${docCell(a.doc)}</td><td>${a.st === 'new' ? '<span class="tag">новая</span>' : a.st === 'ok' ? '<span class="tag ok">' + esc(a.course) + '</span>' : '<span class="tag no">отклонена</span>'}</td><td>${a.st === 'new' ? `<button class="btn sm" onclick="assign(${a.id})">Назначить курс</button> <button class="btn sm ghost" onclick="rej(${a.id})">Отклонить</button>` : ''}</td></tr>`).join('')}</table>`;
+}
+function docCell(d) { return !d ? '<span class="tag no">нет документа</span>' : d.t === 'url' ? '<a href="' + esc(d.v) + '" target="_blank" style="color:var(--amber)">ссылка Битрикс ↗</a>' : '<span class="tag">📎 ' + esc(d.v) + '</span>'; }
+function assign(id) {
+  const a = S.apps.find(x => x.id === id);
+  modal(`<div class="k">Назначение курса</div><h2 style="font-size:32px;margin:8px 0">${esc(a.name)}</h2><label>Документ о допуске</label><div>${docCell(a.doc)}</div>${a.doc ? '' : '<div class="note" style="border-left-color:var(--bordo)">Документ не приложен — запросите его у участника в Битрикс24 перед назначением курса.</div>'}<label>Курс</label><select><option>Школа амбассадоров ТАРКОС — полный курс (5 блоков)</option><option>Экспресс: блоки 1–3</option></select><label>Поток</label><select id="flow"><option>Поток №3 (старт 01.10.2026)</option><option>Поток №4 (старт 01.11.2026)</option></select><label>Куратор</label><select><option>Координатор школы</option></select>
+  <div class="row" style="margin-top:22px"><button class="btn" onclick="doAssign(${id})">Назначить</button><button class="btn ghost" onclick="closeModal()">Отмена</button></div>`);
+}
+function doAssign(id) { const a = S.apps.find(x => x.id === id); a.st = 'ok'; a.course = $('#flow').value.split(' (')[0]; S.users.push({ name: a.name, dept: a.dept, lvl: 1, prog: 0, score: 0, st: 'act' }); closeModal(); toast('Курс назначен, приглашение отправлено'); render(); }
+function rej(id) { S.apps.find(x => x.id === id).st = 'no'; toast('Заявка отклонена'); render(); }
+function aUsers() {
+  return head('Участники', 'Контроль прохождения') + `<table style="margin-top:24px"><tr><th>Участник</th><th>Подразделение</th><th>Уровень</th><th>Прогресс</th><th>Тесты</th><th>Статус</th><th></th></tr>${S.users.map((u, n) => `<tr><td>${esc(u.name)}</td><td>${esc(u.dept)}</td><td class="o" style="color:var(--amber)">${u.lvl}</td><td style="width:160px">${bar(u.prog)}</td><td>${u.score ? u.score + '%' : '—'}</td><td>${u.st === 'blocked' ? '<span class="tag no">заблокирован</span>' : u.st === 'warn' ? '<span class="tag">предупреждение</span>' : '<span class="tag ok">активен</span>'}</td><td>${u.st === 'blocked' ? `<button class="btn sm ghost" onclick="unblock(${n})">Разблокировать</button>` : `<button class="btn sm red" onclick="block(${n})">Блокировать</button>`}</td></tr>`).join('')}</table>`;
+}
+function block(n) { S.users[n].st = 'blocked'; toast('Доступ участника заблокирован'); render(); }
+function unblock(n) { S.users[n].st = 'act'; toast('Доступ восстановлен'); render(); }
+function aTests() {
+  return head('Тесты', 'Контроль тестов по разделам', 'Средний балл и доля сдавших по каждому блоку.') + `<table style="margin-top:24px"><tr><th>Блок</th><th>Вопросов</th><th>Сдали</th><th>Средний балл</th><th>Проблемный вопрос</th></tr>${DATA.blocks.map((b, i) => `<tr><td>${i + 1}. ${esc(b.title)}</td><td>${b.quiz.length}</td><td style="width:180px">${bar([83, 67, 50, 33, 33][i])}</td><td>${[88, 81, 76, 84, 90][i]}%</td><td style="color:var(--muted);font-size:14px">${esc((b.quiz[1] || b.quiz[0]).q)}</td></tr>`).join('')}</table><div class="demo" style="margin-top:12px">Статистика — демонстрационная; вопросы — реальные из уроков</div>`;
+}
+function aSchedule() {
+  return head('Расписание', 'Очные и онлайн-семинары', 'Администратор создаёт занятия, участники записываются из личного кабинета.') + `<table style="margin-top:24px"><tr><th>Дата</th><th>Занятие</th><th>Место</th><th>Уровень</th><th>Записано</th></tr>${S.sessions.map(s => `<tr><td class="o" style="color:var(--amber)">${s.date} · ${s.time}</td><td>${esc(s.title)}</td><td>${esc(s.place)}</td><td>${s.lvl}</td><td style="width:200px">${bar(Math.round((s.cap - s.seats + (S.booked.has(s.id) ? 1 : 0)) / s.cap * 100))}<span class="demo">${s.cap - s.seats + (S.booked.has(s.id) ? 1 : 0)}/${s.cap}</span></td></tr>`).join('')}</table>
+  <div class="card" style="margin-top:28px"><div class="k">Новое занятие</div><form onsubmit="event.preventDefault();addSession(this)" class="grid g4" style="align-items:end"><div><label>Название</label><input name="t" required placeholder="Например: практикум по голосу"></div><div><label>Дата</label><input name="d" type="date" required></div><div><label>Мест</label><input name="c" type="number" value="15" min="1"></div><div><label>С уровня</label><select name="l"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div><div style="grid-column:1/-1"><button class="btn">Добавить в расписание</button></div></form></div>`;
+}
+function addSession(f) { const d = f.d.value.split('-').reverse().join('.'); S.sessions.push({ id: Date.now(), title: f.t.value, date: d, time: '18:00', place: 'Уточняется', cap: +f.c.value, seats: +f.c.value, lvl: +f.l.value }); toast('Занятие добавлено — участники увидят его в кабинете'); render(); }
+function aCerts() {
+  const list = S.users.filter(u => u.prog === 100 || u.cert);
+  return head('Сертификаты', 'Создание и отправка', 'Сертификат формируется для участников, прошедших все уровни. Контроль отправки электронной и печатной версии.') + `<table style="margin-top:24px"><tr><th>Участник</th><th>Балл</th><th>Электронный</th><th>Печатный</th><th></th></tr>${list.map(u => `<tr><td>${esc(u.name)}</td><td>${u.score}%</td><td>${u.cert === 'sent' || u.certE ? '<span class="tag ok">отправлен</span>' : '<span class="tag">готов</span>'}</td><td>${u.cert === 'sent' ? '<span class="tag ok">вручён</span>' : u.certP ? '<span class="tag ok">отправлен почтой</span>' : '<span class="tag mute">не отправлен</span>'}</td><td><button class="btn sm" onclick="certPrev('${esc(u.name)}')">Сформировать</button></td></tr>`).join('')}</table>`;
+}
+function certPrev(name) {
+  modal(`<div class="k">Предпросмотр</div><h2 style="font-size:30px;margin:8px 0 18px">Сертификат · ${esc(name)}</h2><div class="certbox"><img src="../cert.jpg" alt=""><div class="nm">${esc(name)}</div></div>
+  <div class="row" style="margin-top:22px"><button class="btn" onclick="certSend('${esc(name)}','e')">Отправить на e-mail</button><button class="btn ghost" onclick="certSend('${esc(name)}','p')">Отправить печатный</button><button class="btn ghost" onclick="closeModal()">Закрыть</button></div>`, true);
+}
+function certSend(name, k) { const u = S.users.find(x => x.name === name); if (u) u[k === 'e' ? 'certE' : 'certP'] = true; closeModal(); toast(k === 'e' ? 'Электронный сертификат отправлен' : 'Печатный сертификат передан в отправку'); render(); }
+function aRules() {
+  return head('Нарушители', 'Алгоритм блокировки', 'Проект алгоритма для согласования: прозрачная эскалация вместо внезапной блокировки.') + `<div class="path" style="grid-template-columns:repeat(3,1fr)">${[['01', 'Предупреждение', 'Личное сообщение модератора со ссылкой на правило потока'], ['02', 'Ограничение чата', 'Временный запрет писать в чат потока (7 дней)'], ['03', 'Блокировка доступа', 'Доступ к курсу закрывается, решение фиксируется администратором']].map(s => `<div class="st"><b>${s[0]}</b><i></i><h3>${s[1]}</h3><p>${s[2]}</p></div>`).join('')}</div>
+  <h3 style="font-size:24px;margin:20px 0 12px">Под наблюдением</h3><table><tr><th>Участник</th><th>Нарушение</th><th>Этап</th><th></th></tr>
+  ${S.users.map((u, n) => u.st === 'warn' || u.st === 'blocked' ? `<tr><td>${esc(u.name)}</td><td>${u.st === 'warn' ? 'Оскорбительные сообщения в чате' : 'Повторное нарушение правил чата'}</td><td>${u.st === 'warn' ? '<span class="tag">01 · предупреждение</span>' : '<span class="tag no">03 · блокировка</span>'}</td><td>${u.st === 'blocked' ? `<button class="btn sm ghost" onclick="unblock(${n})">Разблокировать</button>` : `<button class="btn sm red" onclick="block(${n})">Эскалировать</button>`}</td></tr>` : '').join('')}</table>`;
+}
+function aMap() {
+  const C = [['Подача заявки', '#/', 'Лендинг → «Подать заявку»'], ['Создание ЛК', '#/me', 'После одобрения заявки'], ['Прохождение уроков', '#/me/lessons', '49 уроков-презентаций'], ['Фиксация прогресса', '#/me', 'Прогресс по блокам и курсу'], ['Тестирование', '#/me/tests', 'Тесты по блокам из вопросов уроков'], ['Получение ачивок', '#/me/badges', '7 ачивок'], ['Переход к следующему уровню', '#/me', 'Уровень = блок, порог 70%'], ['Очные занятия: расписание, запись', '#/me/schedule', 'Запись и отмена'], ['Чат потока и поддержки', '#/me/chat', 'Два чата']];
+  const A = [['Обработка заявок', '#/admin/apps'], ['Назначение курса', '#/admin/apps'], ['Контроль тестов по разделам', '#/admin/tests'], ['Онлайн-расписание семинаров', '#/admin/schedule'], ['Администрирование чата потока', '#/admin/chat'], ['Чат поддержки', '#/admin/support'], ['Создание сертификатов', '#/admin/certs'], ['Контроль отправки сертификатов', '#/admin/certs'], ['Алгоритм блокировки нарушителей', '#/admin/rules']];
+  const li = (x, role) => `<div class="ls done"><span class="tag ok">MVP</span><span class="t">${x[0]}${x[2] ? `<span class="demo" style="display:block">${x[2]}</span>` : ''}</span><button class="btn sm ghost" onclick="S.role='${role}';go('${x[1]}')">Показать</button></div>`;
+  return head('Требования из ТЗ', 'Карта MVP', 'Все 18 пунктов клиентского и административного контуров показаны в прототипе. Бэкенд, авторизация и интеграция с Битрикс — следующий этап.') +
+    `<div class="grid g2" style="margin-top:24px"><div><h3 style="font-size:22px;margin-bottom:12px">Клиентский контур · 9/9</h3>${C.map(x => li(x, 'user')).join('')}</div><div><h3 style="font-size:22px;margin-bottom:12px">Административный контур · 9/9</h3>${A.map(x => li(x, 'admin')).join('')}</div></div>`;
+}
+
+// ---------- роутер ----------
+function render() {
+  const h = location.hash || '#/';
+  if (h.startsWith('#/me')) S.role = 'user'; else if (h.startsWith('#/admin')) S.role = 'admin';
+  document.querySelectorAll('#roles button').forEach(b => b.classList.toggle('on', b.dataset.r === S.role));
+  let v;
+  if (h === '#/' || h === '#program' || h === '') v = landing();
+  else if (h.startsWith('#/me')) {
+    const p = h.split('/')[2] || '';
+    const body = p === 'lessons' ? uLessons() : p === 'tests' ? uTests() : p === 'test' ? uTest(+h.split('/')[3]) : p === 'badges' ? uBadges() : p === 'schedule' ? uSchedule() : p === 'chat' ? chatView(S.chat, 'chat', 'Чат потока', 'Поток №3') : p === 'support' ? chatView(S.support, 'support', 'Поддержка', 'Чат с координатором') : p === 'cert' ? uCert() : uHome();
+    v = shell(MENU_U, S.me.name, 'Участник · поток №3', body);
+  } else if (h.startsWith('#/admin')) {
+    const p = h.split('/')[2] || '';
+    const body = p === 'apps' ? aApps() : p === 'users' ? aUsers() : p === 'tests' ? aTests() : p === 'schedule' ? aSchedule() : p === 'chat' ? chatView(S.chat, 'chat', 'Модерация', 'Чат потока №3', true) : p === 'support' ? chatView(S.support, 'support', 'Поддержка', 'Обращения участников', true) : p === 'certs' ? aCerts() : p === 'rules' ? aRules() : p === 'map' ? aMap() : aHome();
+    v = shell(MENU_A, 'Координатор школы', 'Администратор', body);
+  } else v = landing();
+  $('#view').innerHTML = v;
+  if (h === '#program') setTimeout(() => $('#program') && $('#program').scrollIntoView(), 30); else if (!h.startsWith('#/me/chat') && !h.startsWith('#/admin/chat')) window.scrollTo(0, 0);
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
+  document.querySelectorAll('.reveal').forEach(e => io.observe(e));
+}
+addEventListener('hashchange', render);
+if (!location.hash) location.hash = S.role === 'user' ? '#/me' : S.role === 'admin' ? '#/admin' : '#/';
+render();
+</script>
+</body>
+</html>
