@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="gate.js"></script>
 <title>Школа амбассадоров ТАРКОС — MVP</title>
 <style>
 /* cyrillic-ext */
@@ -164,6 +165,7 @@ tr:hover td{background:rgba(227,154,45,.04)}
   <img src="../logo_m.png" alt="ТАРКОС" onclick="go('#/')">
   <div style="flex:1"></div>
   <div class="roles" id="roles"><button data-r="guest">Гость</button><button data-r="user">Участник</button><button data-r="admin">Администратор</button></div>
+  <div class="roles" id="lockw" style="display:none;margin-left:10px"><button type="button" id="lockb" title="Закрыть доступ — код спросят заново">Выйти</button></div>
 </div></header>
 <div id="view"></div>
 <div class="modal" id="modal"><div class="box" id="mbox"></div></div>
@@ -225,6 +227,19 @@ const totalProg = () => Math.round([...S.done].length / allLessons().length * 10
 
 function setRole(r) { S.role = r; try { localStorage.setItem('tarkos-role', r); } catch (e) {} go(r === 'guest' ? '#/' : r === 'user' ? '#/me' : '#/admin'); }
 document.querySelectorAll('#roles button').forEach(b => b.onclick = () => setRole(b.dataset.r));
+
+// ---------- доступ по коду ----------
+function syncLock() { const w = $('#lockw'); if (w) w.style.display = TG.unlocked() ? '' : 'none'; }
+$('#lockb').onclick = () => { TG.lock(); syncLock(); toast('Доступ закрыт — код спросят заново'); go('#/'); render(); };
+// уроки и интерактивы из любого списка открываются только после ввода кода
+document.addEventListener('click', e => {
+  const a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+  if (!a) return;
+  const href = a.getAttribute('href') || '';
+  if (!/^(block\d+\/|int\/)/.test(href) || TG.unlocked()) return;
+  e.preventDefault();
+  TG.ask(() => { syncLock(); window.open(href, a.target || '_blank'); render(); }, { cancel: true, text: 'Отмена' });
+});
 
 // ---------- иконки ачивок (гравюра) ----------
 const ICON = {
@@ -437,8 +452,17 @@ function aMap() {
 // ---------- роутер ----------
 function render() {
   const h = location.hash || '#/';
+  if ((h.startsWith('#/me') || h.startsWith('#/admin')) && !TG.unlocked()) {
+    const r = h.startsWith('#/admin') ? 'admin' : 'user';
+    document.querySelectorAll('#roles button').forEach(b => b.classList.toggle('on', b.dataset.r === r));
+    syncLock();
+    $('#view').innerHTML = '';
+    TG.ask(() => { syncLock(); render(); }, { href: '#/', text: 'Вернуться на главную' });
+    return;
+  }
   if (h.startsWith('#/me')) S.role = 'user'; else if (h.startsWith('#/admin')) S.role = 'admin';
   document.querySelectorAll('#roles button').forEach(b => b.classList.toggle('on', b.dataset.r === S.role));
+  syncLock();
   let v;
   if (h === '#/' || h === '#program' || h === '') v = landing();
   else if (h.startsWith('#/me')) {
@@ -455,8 +479,12 @@ function render() {
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
   document.querySelectorAll('.reveal').forEach(e => io.observe(e));
 }
-addEventListener('hashchange', render);
-if (!location.hash) location.hash = S.role === 'user' ? '#/me' : S.role === 'admin' ? '#/admin' : '#/';
+addEventListener('hashchange', () => {
+  const h = location.hash || '#/';
+  if (!h.startsWith('#/me') && !h.startsWith('#/admin')) TG.close();
+  render();
+});
+if (!location.hash) location.hash = (TG.unlocked() && S.role === 'user') ? '#/me' : (TG.unlocked() && S.role === 'admin') ? '#/admin' : '#/';
 render();
 </script>
 </body>

@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /out/block1/
+Disallow: /out/block2/
+Disallow: /out/block3/
+Disallow: /out/block4/
+Disallow: /out/block5/
+Disallow: /out/int/
+Disallow: /out/index.html
+Disallow: /out/pixels.html
